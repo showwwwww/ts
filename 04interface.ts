@@ -50,4 +50,22 @@ a = ro; // error!
 // 把整个 ReadonlyArray 赋值到一个普通数组是不可以的，但是可以用类型断言重写
 a = ro as number[];
 // 变量用 const 属性用 readonly
-// 当使用可选属性时，TS 会进行额外属性检查，即超出的
+// 当使用可选属性时，TS 会进行额外属性检查，即超出的定义范围之外得属性会报错
+// 绕开额外属性检查可以使用类型断言
+interface Circle {
+    width?: number;
+    height?: number;
+}
+
+function createCircle(circle: Circle): { width: number, height: number } {
+    return { width: circle.width, height: circle.height };
+}
+let mySquare2 = createCircle({ width: 100, opacity: 0.5 } as Circle);
+// 但最佳方式是添加一个字符串索引标签名，如果能够确定这个对象可能具有某些特殊用途使用的额外属性。
+interface Triangle {
+    width?: number;
+    height?: number;
+    [propName: string] : any
+}
+
+// 最后一种跳过额外属性检查的方式是：将对象赋值给另一个变量
